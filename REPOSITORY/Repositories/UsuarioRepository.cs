@@ -24,9 +24,9 @@ namespace REPOSITORY.Repositories
         }
 
         //EXCLUI USUARIO
-        public void DeleteUsuario(int idUser)
+        public void DeleteUsuario(Usuario usuario)
         {
-            _connection.Delete(idUser);
+            _connection.Delete(usuario);
         }
 
         //INSERE USUARIO
@@ -45,9 +45,9 @@ namespace REPOSITORY.Repositories
                         	Sexo,
                         	Ativo
                         from RegistroUsuario
-                        where IdUsuario = @id";
+                        where IdUsuario = @idUsuario";
 
-            return _connection.Query(sql, new { @id = id }).FirstOrDefault();
+            return _connection.Query<Usuario>(sql, new { idUsuario = id }).FirstOrDefault();
         }
 
         //LISTA USUARIOS ATIVOS

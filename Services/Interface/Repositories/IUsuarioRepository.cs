@@ -11,7 +11,7 @@ namespace SERVICES.Interface.Repositories
     {
         //INTERFACE
         void UpdateUsuario(Usuario usuario);
-        void DeleteUsuario(int idUser);
+        void DeleteUsuario(Usuario usuario);
         void InsertUsuario(Usuario usuario);
         Usuario GetUsuario(int id);
         IEnumerable<Usuario> GetListaUsuarios();

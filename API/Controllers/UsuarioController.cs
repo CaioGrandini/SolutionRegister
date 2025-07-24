@@ -3,6 +3,7 @@ using MODEL.DTO;
 using MODEL.Entities;
 using SERVICES.Interface.Services;
 using SERVICES.Services;
+using System.Diagnostics.Eventing.Reader;
 
 namespace API.Controllers
 {
@@ -47,21 +48,30 @@ namespace API.Controllers
             return Ok(usuarios);
         }
 
-        [HttpPut("update/{id}")]
-        public ActionResult Update(Usuario usuario)
+        [HttpPut("update")]
+        public ActionResult UpdateUsuario([FromBody] Usuario usuario)
         {
             if (usuario == null)
                 return NotFound();
 
-            _usuarioServices.UpdateUsuario(usuario);
-            return Ok();
+            (var valid, var message) = _usuarioServices.UpdateUsuario(usuario);
+
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { error = message });
+
         }
 
         [HttpDelete("delete/{id}")]
         public ActionResult Delete(int id)
-        {                     
-            _usuarioServices.DeleteUsuario(id);
-            return NoContent(); // retorna 204
+        {
+            (var valid, var message) = _usuarioServices.DeleteUsuario(id);
+
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { error = message });
         }
 
         [HttpGet("getList")]

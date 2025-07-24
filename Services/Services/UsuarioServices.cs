@@ -19,15 +19,45 @@ namespace SERVICES.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public void DeleteUsuario(int IdUser)
+        public (bool, string) DeleteUsuario(int IdUser)
         {
-            _usuarioRepository.DeleteUsuario(IdUser);
+            var getUser = GetUsuario(IdUser);
+
+            if (getUser == null)
+                return (false, "Usuario não encontrado");
+
+            if (!getUser.Ativo)
+                return (false, "Usuario desativado");
+
+            _usuarioRepository.DeleteUsuario(getUser);
+            return (true, string.Empty);
         }
 
-        public void UpdateUsuario(Usuario usuario)
+        public (bool, string) UpdateUsuario(Usuario usuario)
         {
+            Usuario getUser = GetUsuario(usuario.IdUsuario);
+
+            if (getUser == null)
+                return (false, "Usuario não encontrado");
+
+            if (!getUser.Ativo)
+                return (false, "Usuario desativado");
+
+            var usuarioInsert = new UsuarioInsert
+            {
+                NomeContato = usuario.NomeContato,
+                Ativo = usuario.Ativo,
+                DataNascimento = usuario.DataNascimento,
+                Sexo = usuario.Sexo
+            };
+
+            if (!ValidaInformacoes(usuarioInsert, out string mensagem))
+                return (false, mensagem);
+
             _usuarioRepository.UpdateUsuario(usuario);
+            return (true, string.Empty);
         }
+
 
         public (bool, string) InserirUsuario(UsuarioInsert usuarioInsert)
         {
@@ -42,16 +72,9 @@ namespace SERVICES.Services
                 Sexo = usuarioInsert.Sexo,
             };
 
-
-            InsertUsuario(usuario);
+            _usuarioRepository.InsertUsuario(usuario);
             return (true, string.Empty);
         }
-
-        public void InsertUsuario(Usuario usuario)
-        {
-            _usuarioRepository.InsertUsuario(usuario);
-        }
-
 
         public Usuario GetUsuario(int id)
         {
