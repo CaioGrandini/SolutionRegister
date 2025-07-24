@@ -11,7 +11,7 @@ namespace MODEL.DTO
     {
         [Required(ErrorMessage = "O nome é obrigatório.")]
         public string NomeContato { get; set; }
-+
+
         [DataType(DataType.Date)]
         public DateTime DataNascimento { get; set; }
 
