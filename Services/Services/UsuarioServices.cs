@@ -1,6 +1,7 @@
-﻿using MODEL.Entities;
-using REPOSITORY.Interface;
-using SERVICES.Interface;
+﻿using MODEL.DTO;
+using MODEL.Entities;
+using SERVICES.Interface.Repositories;
+using SERVICES.Interface.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,38 +19,51 @@ namespace SERVICES.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public void DesativarUsuario(int IdUser)
+        public void DeleteUsuario(int IdUser)
         {
-            _usuarioRepository.DesativarUsuario(IdUser);
+            _usuarioRepository.DeleteUsuario(IdUser);
         }
 
-        public void ExcluirUsuario(int IdUser)
+        public void UpdateUsuario(Usuario usuario)
         {
-            _usuarioRepository.ExcluirUsuario(IdUser);
+            _usuarioRepository.UpdateUsuario(usuario);
         }
 
-        public void InserirUsuario(Usuario usuario)
+        public (bool, string) InserirUsuario(UsuarioInsert usuarioInsert)
         {
-            _usuarioRepository.InserirUsuario(usuario);
+            if (!ValidaInformacoes(usuarioInsert, out string mensagem))
+                return (false, mensagem);
+
+            var usuario = new Usuario
+            {
+                NomeContato = usuarioInsert.NomeContato,
+                Ativo = usuarioInsert.Ativo,
+                DataNascimento = usuarioInsert.DataNascimento,
+                Sexo = usuarioInsert.Sexo,
+            };
+
+
+            InsertUsuario(usuario);
+            return (true, string.Empty);
+        }
+
+        public void InsertUsuario(Usuario usuario)
+        {
+            _usuarioRepository.InsertUsuario(usuario);
         }
 
 
-        public ListarUsuario GetUsuario(int id)
+        public Usuario GetUsuario(int id)
         {
             return _usuarioRepository.GetUsuario(id);
         }
 
-        public IEnumerable<ListarUsuario> ListarUsuariosAtivos()
+        public IEnumerable<Usuario> GetListaUsuarios()
         {
-            return _usuarioRepository.ListarUsuariosAtivos();
+            return _usuarioRepository.GetListaUsuarios();
         }
 
-        public void VisualizarDetalhes()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ValidaInformacoes(Usuario usuario, out string mensagem)
+        public bool ValidaInformacoes(UsuarioInsert usuario, out string mensagem)
         {
             DateTime hoje = DateTime.Today;
 
@@ -82,5 +96,6 @@ namespace SERVICES.Services
             mensagem = "Ok";
             return true;
         }
+
     }
 }

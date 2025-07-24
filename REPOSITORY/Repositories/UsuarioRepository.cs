@@ -1,8 +1,9 @@
 ﻿using MODEL.Entities;
-using REPOSITORY.Interface;
 using System.Data;
 using Dapper;
 using System.Data.Common;
+using SERVICES.Interface.Repositories;
+using Dommel;
 
 namespace REPOSITORY.Repositories
 {
@@ -16,72 +17,54 @@ namespace REPOSITORY.Repositories
         }
 
 
-        //DESATIVA USUARIO
-        public void DesativarUsuario(int idUser)
+        //UPDATE USUARIO
+        public void UpdateUsuario(Usuario usuario)
         {
-            var sql = "UPDATE USER_REGISTER SET ATIVO = 0 WHERE IDUSER_REGISTER = @IDUSUARIO_REGISTER";
-            _connection.Execute(sql, new
-            {
-                IDUSUARIO_REGISTER = idUser
-            });
+            _connection.Update(usuario);
         }
 
         //EXCLUI USUARIO
-        public void ExcluirUsuario(int idUser)
+        public void DeleteUsuario(int idUser)
         {
-            var sql = "DELETE FROM USER_REGISTER WHERE IDUSER_REGISTER = @IDUSUARIO_REGISTER";
-            _connection.Execute(sql, new
-            {
-                IDUSUARIO_REGISTER = idUser
-            });
+            _connection.Delete(idUser);
         }
 
         //INSERE USUARIO
-        public void InserirUsuario(Usuario usuario)
+        public void InsertUsuario(Usuario usuario)
         {
-            var sql = "INSERT INTO USER_REGISTER (NOME_CONTATO, DATA_NASCIMENTO, SEXO, ATIVO) VALUES (@NOME_CONTATO, @DATA_NASCIMENTO, @SEXO, @ATIVO)";
-            _connection.Execute(sql, new
-            {
-                NOME_CONTATO = usuario.NomeContato,
-                DATA_NASCIMENTO = usuario.DataNascimento,
-                SEXO = usuario.Sexo,
-                ATIVO = usuario.Ativo
-            });
-        }
-
-
-        public void VisualizarDetalhes()
-        {
-            throw new NotImplementedException();
+            _connection.Insert(usuario);
         }
 
         //BUSCA USUARIO
-        public ListarUsuario GetUsuario(int id)
+        public Usuario GetUsuario(int id)
         {
-            var sql = @"SELECT  
-                         IDUSER_REGISTER AS IdUserRegister, 
-                         NOME_CONTATO AS NomeContato,
-                         DATA_NASCIMENTO AS DataNascimento,
-                         SEXO,
-                         ATIVO
-                FROM USER_REGISTER WHERE IDUSER_REGISTER = @Id";
-            return _connection.QueryFirstOrDefault<ListarUsuario>(sql, new { Id = id });
+            var sql = @"Select 
+                        	IdUsuario,
+                        	NomeContato,
+                        	DataNascimento,
+                        	Sexo,
+                        	Ativo
+                        from RegistroUsuario
+                        where IdUsuario = @id";
+
+            return _connection.Query(sql, new { @id = id }).FirstOrDefault();
         }
 
         //LISTA USUARIOS ATIVOS
-        public IEnumerable<ListarUsuario> ListarUsuariosAtivos()
+        public IEnumerable<Usuario> GetListaUsuarios()
         {
-            var sql = @"SELECT 
-                         IDUSER_REGISTER AS IdUserRegister,
-                         NOME_CONTATO AS NomeContato,
-                         DATA_NASCIMENTO AS DataNascimento,
-                         SEXO,
-                         ATIVO
-                       FROM USER_REGISTER
-                       WHERE ATIVO = 1";
+            var sql = @"Select 
+                        	IdUsuario,
+                        	NomeContato,
+                        	DataNascimento,
+                        	Sexo,
+                        	Ativo
+                        from RegistroUsuario
+                        where ativo = 1";
 
-            return _connection.Query<ListarUsuario>(sql).ToList();
+            return _connection.Query<Usuario>(sql).ToList();
         }
+
 
     }
 }

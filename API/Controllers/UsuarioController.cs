@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MODEL.DTO;
 using MODEL.Entities;
-using SERVICES.Interface;
+using SERVICES.Interface.Services;
 using SERVICES.Services;
 
 namespace API.Controllers
@@ -17,21 +18,22 @@ namespace API.Controllers
         }
 
 
-        [HttpPost]
-        public ActionResult Post([FromBody] Usuario usuario)
+        [HttpPost("insert")]
+        public ActionResult Post([FromBody] UsuarioInsert usuario)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_usuarioServices.ValidaInformacoes(usuario, out string mensagem))
-                return BadRequest(new { erro = mensagem });
+            (var valid, var message) = _usuarioServices.InserirUsuario(usuario);
 
-            _usuarioServices.InserirUsuario(usuario);
-            return Ok();
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { erro = message });
 
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public ActionResult Get(int id)
         {
             var usuarios = _usuarioServices.GetUsuario(id);
@@ -45,34 +47,27 @@ namespace API.Controllers
             return Ok(usuarios);
         }
 
-        [HttpPut("desativar/{id}")]
-        public ActionResult Edit(int id)
+        [HttpPut("update/{id}")]
+        public ActionResult Update(Usuario usuario)
         {
-            var usuario = _usuarioServices.GetUsuario(id);
-
             if (usuario == null)
                 return NotFound();
 
-            _usuarioServices.DesativarUsuario(id);
+            _usuarioServices.UpdateUsuario(usuario);
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public ActionResult Delete(int id)
-        {
-            var usuario = _usuarioServices.GetUsuario(id);
-
-            if (usuario == null)
-                return Ok();
-
-            _usuarioServices.ExcluirUsuario(id);
+        {                     
+            _usuarioServices.DeleteUsuario(id);
             return NoContent(); // retorna 204
         }
 
-        [HttpGet("listar")]
-        public IEnumerable<ListarUsuario> ListarUsuariosAtivos()
+        [HttpGet("getList")]
+        public IEnumerable<Usuario> GetList()
         {
-            IEnumerable<ListarUsuario> usuario = _usuarioServices.ListarUsuariosAtivos();
+            IEnumerable<Usuario> usuario = _usuarioServices.GetListaUsuarios();
             return usuario;
         }
 

@@ -1,6 +1,7 @@
-﻿using REPOSITORY.Interface;
+﻿
 using REPOSITORY.Repositories;
-using SERVICES.Interface;
+using SERVICES.Interface.Repositories;
+using SERVICES.Interface.Services;
 using SERVICES.Services;
 using System.Data;
 

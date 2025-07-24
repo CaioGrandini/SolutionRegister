@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Dommel" Version="3.4.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MODEL\MODEL.csproj" />
+    <ProjectReference Include="..\Services\SERVICES.csproj" />
   </ItemGroup>
 
 </Project>
