@@ -4,6 +4,7 @@ using Dapper;
 using System.Data.Common;
 using SERVICES.Interface.Repositories;
 using Dommel;
+using MODEL.DTO;
 
 namespace REPOSITORY.Repositories
 {
@@ -16,6 +17,7 @@ namespace REPOSITORY.Repositories
             _connection = connection;
         }
 
+        #region ..:: UPDATE's ::..
 
         //UPDATE USUARIO
         public void UpdateUsuario(Usuario usuario)
@@ -23,18 +25,26 @@ namespace REPOSITORY.Repositories
             _connection.Update(usuario);
         }
 
+        #endregion ..:: UPDATE's ::..
+
+        #region ..:: DELETE ::..
         //EXCLUI USUARIO
         public void DeleteUsuario(Usuario usuario)
         {
             _connection.Delete(usuario);
         }
+        #endregion ..:: DELETE ::..
 
+        #region ..:: INSERT ::..
         //INSERE USUARIO
         public void InsertUsuario(Usuario usuario)
         {
             _connection.Insert(usuario);
         }
 
+        #endregion ..:: INSERT ::..
+
+        #region ..:: GET's ::..
         //BUSCA USUARIO
         public Usuario GetUsuario(int id)
         {
@@ -65,6 +75,6 @@ namespace REPOSITORY.Repositories
             return _connection.Query<Usuario>(sql).ToList();
         }
 
-
+        #endregion ..:: GET's ::..
     }
 }

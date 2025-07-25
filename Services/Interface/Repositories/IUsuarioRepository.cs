@@ -1,4 +1,5 @@
-﻿using MODEL.Entities;
+﻿using MODEL.DTO;
+using MODEL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,13 @@ namespace SERVICES.Interface.Repositories
     public interface IUsuarioRepository
     {
         //INTERFACE
-        void UpdateUsuario(Usuario usuario);
         void DeleteUsuario(Usuario usuario);
         void InsertUsuario(Usuario usuario);
         Usuario GetUsuario(int id);
         IEnumerable<Usuario> GetListaUsuarios();
+
+        //UPDATE
+        void UpdateUsuario(Usuario usuario);
+
     }
 }

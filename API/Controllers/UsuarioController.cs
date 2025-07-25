@@ -37,31 +37,25 @@ namespace API.Controllers
         [HttpGet("get/{id}")]
         public ActionResult Get(int id)
         {
-            var usuarios = _usuarioServices.GetUsuario(id);
+            (var valid, var mensagem, var usuarios) = _usuarioServices.GetUsuario(id);
 
             if (usuarios == null)
-                return NotFound();
+                return BadRequest(new { erro = mensagem }); 
 
             if (!usuarios.Ativo)
-                return BadRequest(new { erro = "Usuario desativado" });
+                return BadRequest(new { erro = mensagem });
 
             return Ok(usuarios);
         }
 
-        [HttpPut("update")]
-        public ActionResult UpdateUsuario([FromBody] Usuario usuario)
+
+        [HttpGet("getList")]
+        public IEnumerable<UsuarioIdade> GetList()
         {
-            if (usuario == null)
-                return NotFound();
-
-            (var valid, var message) = _usuarioServices.UpdateUsuario(usuario);
-
-            if (valid)
-                return Ok();
-            else
-                return BadRequest(new { error = message });
-
+            IEnumerable<UsuarioIdade> usuario = _usuarioServices.GetListaUsuarios();
+            return usuario;
         }
+
 
         [HttpDelete("delete/{id}")]
         public ActionResult Delete(int id)
@@ -74,12 +68,63 @@ namespace API.Controllers
                 return BadRequest(new { error = message });
         }
 
-        [HttpGet("getList")]
-        public IEnumerable<UsuarioIdade> GetList()
+        
+
+        [HttpPut("update/nome/{id}")]
+        public ActionResult UpdateUsuario(int id, [FromBody] UpdateNome usuario)
         {
-            IEnumerable<UsuarioIdade> usuario = _usuarioServices.GetListaUsuarios();
-            return usuario;
+            if (usuario == null)
+                return NotFound();
+
+            (var valid, var message) = _usuarioServices.UpdateNome(id, usuario);
+
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { error = message });
+
         }
 
+        [HttpPut("update/idade/{id}")]
+        public ActionResult UpdateIdade(int id, [FromBody] UpdateIdade usuario)
+        {
+            if (usuario == null)
+                return NotFound();
+
+            (var valid, var message) = _usuarioServices.UpdateIdade(id, usuario);
+
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { error = message });
+
+        }
+
+        [HttpPut("update/sexo/{id}")]
+        public ActionResult UpdateSexo(int id, [FromBody] UpdateSexo usuario)
+        {
+            if (usuario == null)
+                return NotFound();
+
+            (var valid, var message) = _usuarioServices.UpdateSexo(id, usuario);
+
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { error = message });
+
+        }
+
+        [HttpPut("update/desativar/{id}")]
+        public ActionResult UpdateDesativar(int id)
+        {
+            (var valid, var message) = _usuarioServices.UpdateDesativar(id);
+
+            if (valid)
+                return Ok();
+            else
+                return BadRequest(new { error = message });
+
+        }
     }
 }

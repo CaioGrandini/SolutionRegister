@@ -19,9 +19,11 @@ namespace SERVICES.Services
             _usuarioRepository = usuarioRepository;
         }
 
+        #region ..:: DELETE ::..
+
         public (bool, string) DeleteUsuario(int IdUser)
         {
-            var getUser = GetUsuario(IdUser);
+            (var valid, var mensagem, var getUser) = GetUsuario(IdUser);
 
             if (getUser == null)
                 return (false, "Usuario não encontrado");
@@ -33,7 +35,7 @@ namespace SERVICES.Services
             {
                 NomeContato = getUser.NomeContato,
                 Ativo = getUser.Ativo,
-                DataNascimento = Convert.ToDateTime(getUser.DataNascimento),   
+                DataNascimento = Convert.ToDateTime(getUser.DataNascimento),
                 IdUsuario = IdUser,
                 Sexo = getUser.Sexo
             };
@@ -42,35 +44,13 @@ namespace SERVICES.Services
             return (true, string.Empty);
         }
 
-        public (bool, string) UpdateUsuario(Usuario usuario)
-        {
-            UsuarioIdade getUser = GetUsuario(usuario.IdUsuario);
+        #endregion ..:: DELETE ::..
 
-            if (getUser == null)
-                return (false, "Usuario não encontrado");
-
-            if (!getUser.Ativo)
-                return (false, "Usuario desativado");
-
-            var usuarioInsert = new UsuarioInsert
-            {
-                NomeContato = usuario.NomeContato,
-                Ativo = usuario.Ativo,
-                DataNascimento = usuario.DataNascimento,
-                Sexo = usuario.Sexo
-            };
-
-            if (!ValidaInformacoes(usuarioInsert, out string mensagem))
-                return (false, mensagem);
-
-            _usuarioRepository.UpdateUsuario(usuario);
-            return (true, string.Empty);
-        }
-
+        #region ..:: INSERT ::..
 
         public (bool, string) InserirUsuario(UsuarioInsert usuarioInsert)
         {
-            if (!ValidaInformacoes(usuarioInsert, out string mensagem))
+            if (!ValidaInformacoes(usuarioInsert.DataNascimento, out string mensagem))
                 return (false, mensagem);
 
             var usuario = new Usuario
@@ -85,11 +65,21 @@ namespace SERVICES.Services
             return (true, string.Empty);
         }
 
-        public UsuarioIdade GetUsuario(int id)
+        #endregion ..:: INSERT ::..
+
+        #region ..:: GET's ::..
+
+        public (bool, string, UsuarioIdade) GetUsuario(int id)
         {
             Usuario getUsuario = _usuarioRepository.GetUsuario(id);
 
-            return CalculaIdade(getUsuario);
+            if (getUsuario == null)
+                return (false, "Usuario não encontrado", null);
+
+            if (!getUsuario.Ativo)
+                return (false, "Usuario desativado", null);
+
+            return (true, string.Empty, CalculaIdade(getUsuario));
         }
 
         public IEnumerable<UsuarioIdade> GetListaUsuarios()
@@ -101,20 +91,126 @@ namespace SERVICES.Services
             return usuarioIdade;
         }
 
-        public bool ValidaInformacoes(UsuarioInsert usuario, out string mensagem)
+        #endregion ..:: GET's ::..
+
+        #region ..:: UPDATE's ::..
+
+        public (bool, string) UpdateNome(int id, UpdateNome usuario)
+        {
+            (var valid, var mensagem, UsuarioIdade getUser) = GetUsuario(id);
+
+            if (getUser == null)
+                return (false, mensagem);
+
+            if (!getUser.Ativo)
+                return (false, mensagem);
+
+            var updateNome = new Usuario
+            {
+                IdUsuario = id,
+                NomeContato = usuario.NomeContato,
+                Ativo = getUser.Ativo,
+                DataNascimento = Convert.ToDateTime(getUser.DataNascimento),
+                Sexo = getUser.Sexo
+            };
+
+
+            _usuarioRepository.UpdateUsuario(updateNome);
+            return (true, string.Empty);
+        }
+
+        public (bool, string) UpdateIdade(int id, UpdateIdade usuario)
+        {
+            (var valid, var mensagemUsuario, UsuarioIdade getUser) = GetUsuario(id);
+
+            if (getUser == null)
+                return (false, mensagemUsuario);
+
+            if (!getUser.Ativo)
+                return (false, mensagemUsuario);
+
+            if (!ValidaInformacoes(usuario.DataNascimento, out string mensagem))
+                return (false, mensagem);
+
+            var updateIdade = new Usuario
+            {
+                IdUsuario = id,
+                NomeContato = getUser.NomeContato,
+                Ativo = getUser.Ativo,
+                DataNascimento = Convert.ToDateTime(usuario.DataNascimento),
+                Sexo = getUser.Sexo
+            };
+
+            _usuarioRepository.UpdateUsuario(updateIdade);
+            return (true, string.Empty);
+        }
+
+        public (bool, string) UpdateSexo(int id, UpdateSexo usuario)
+        {
+            (var valid, var mensagem, UsuarioIdade getUser) = GetUsuario(id);
+
+            if (getUser == null)
+                return (false, mensagem);
+
+            if (!getUser.Ativo)
+                return (false, mensagem);
+
+            var updateNome = new Usuario
+            {
+                IdUsuario = id,
+                NomeContato = getUser.NomeContato,
+                Ativo = getUser.Ativo,
+                DataNascimento = Convert.ToDateTime(getUser.DataNascimento),
+                Sexo = usuario.Sexo
+            };
+
+            _usuarioRepository.UpdateUsuario(updateNome);
+            return (true, string.Empty);
+        }
+
+        public (bool, string) UpdateDesativar(int id)
+        {
+            (var valid, var mensagem, UsuarioIdade getUser) = GetUsuario(id);
+
+            if (getUser == null)
+                return (false, mensagem);
+
+            if (!getUser.Ativo)
+                return (false, mensagem);
+
+            var updateNome = new Usuario
+            {
+                IdUsuario = id,
+                NomeContato = getUser.NomeContato,
+                Ativo = false,
+                DataNascimento = Convert.ToDateTime(getUser.DataNascimento),
+                Sexo = getUser.Sexo
+            };
+
+            _usuarioRepository.UpdateUsuario(updateNome);
+            return (true, string.Empty);
+        }
+
+
+
+        #endregion ..:: UPDATE's ::..
+
+        #region ..:: METODOS ::..
+
+        public bool ValidaInformacoes(DateTime dataNascimento, out string mensagem)
         {
             DateTime hoje = DateTime.Today;
 
-            if (usuario.DataNascimento > DateTime.Now)
+            if (dataNascimento > DateTime.Now)
             {
                 mensagem = "A data de nascimento não pode ser maior que a data atual.";
                 return false;
             }
 
-            int idade = hoje.Year - usuario.DataNascimento.Year;
+            int idade = hoje.Year - dataNascimento.Year;
 
             //CALCULA SE AINDA NAO FEZ ANIVERSARIO
-            if (usuario.DataNascimento > hoje.AddYears(-idade))
+            if (dataNascimento > hoje.AddYears(-idade))
             {
                 idade--;
             }
@@ -137,7 +233,6 @@ namespace SERVICES.Services
 
         public IEnumerable<UsuarioIdade> CalculaIdadeLista(IEnumerable<Usuario> usuarios)
         {
-
             DateTime hoje = DateTime.Today;
 
             return usuarios.Select(usuario =>
@@ -183,6 +278,8 @@ namespace SERVICES.Services
             };
 
         }
+
+        #endregion ..:: METODOS ::..
 
     }
 }
