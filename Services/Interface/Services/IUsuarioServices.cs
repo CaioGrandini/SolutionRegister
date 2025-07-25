@@ -14,7 +14,7 @@ namespace SERVICES.Interface.Services
 
         (bool, string) UpdateUsuario(Usuario usuario);
         (bool, string) DeleteUsuario(int idUser);
-        Usuario GetUsuario(int id);
-        IEnumerable<Usuario> GetListaUsuarios();
+        UsuarioIdade GetUsuario(int id);
+        IEnumerable<UsuarioIdade> GetListaUsuarios();
     }
 }

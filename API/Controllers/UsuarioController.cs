@@ -75,9 +75,9 @@ namespace API.Controllers
         }
 
         [HttpGet("getList")]
-        public IEnumerable<Usuario> GetList()
+        public IEnumerable<UsuarioIdade> GetList()
         {
-            IEnumerable<Usuario> usuario = _usuarioServices.GetListaUsuarios();
+            IEnumerable<UsuarioIdade> usuario = _usuarioServices.GetListaUsuarios();
             return usuario;
         }
 

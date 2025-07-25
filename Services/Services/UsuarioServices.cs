@@ -29,13 +29,22 @@ namespace SERVICES.Services
             if (!getUser.Ativo)
                 return (false, "Usuario desativado");
 
-            _usuarioRepository.DeleteUsuario(getUser);
+            Usuario user = new Usuario
+            {
+                NomeContato = getUser.NomeContato,
+                Ativo = getUser.Ativo,
+                DataNascimento = Convert.ToDateTime(getUser.DataNascimento),   
+                IdUsuario = IdUser,
+                Sexo = getUser.Sexo
+            };
+
+            _usuarioRepository.DeleteUsuario(user);
             return (true, string.Empty);
         }
 
         public (bool, string) UpdateUsuario(Usuario usuario)
         {
-            Usuario getUser = GetUsuario(usuario.IdUsuario);
+            UsuarioIdade getUser = GetUsuario(usuario.IdUsuario);
 
             if (getUser == null)
                 return (false, "Usuario não encontrado");
@@ -76,14 +85,20 @@ namespace SERVICES.Services
             return (true, string.Empty);
         }
 
-        public Usuario GetUsuario(int id)
+        public UsuarioIdade GetUsuario(int id)
         {
-            return _usuarioRepository.GetUsuario(id);
+            Usuario getUsuario = _usuarioRepository.GetUsuario(id);
+
+            return CalculaIdade(getUsuario);
         }
 
-        public IEnumerable<Usuario> GetListaUsuarios()
+        public IEnumerable<UsuarioIdade> GetListaUsuarios()
         {
-            return _usuarioRepository.GetListaUsuarios();
+            IEnumerable<Usuario> usuario = _usuarioRepository.GetListaUsuarios();
+
+            IEnumerable<UsuarioIdade> usuarioIdade = CalculaIdadeLista(usuario);
+
+            return usuarioIdade;
         }
 
         public bool ValidaInformacoes(UsuarioInsert usuario, out string mensagem)
@@ -118,6 +133,55 @@ namespace SERVICES.Services
 
             mensagem = "Ok";
             return true;
+        }
+
+        public IEnumerable<UsuarioIdade> CalculaIdadeLista(IEnumerable<Usuario> usuarios)
+        {
+
+            DateTime hoje = DateTime.Today;
+
+            return usuarios.Select(usuario =>
+            {
+                int idade = hoje.Year - usuario.DataNascimento.Year;
+
+                if (usuario.DataNascimento > hoje.AddYears(-idade))
+                {
+                    idade--;
+                }
+
+                return new UsuarioIdade
+                {
+                    IdUsuario = usuario.IdUsuario,
+                    NomeContato = usuario.NomeContato,
+                    Ativo = usuario.Ativo,
+                    DataNascimento = usuario.DataNascimento.ToString("dd/MM/yyyy"),
+                    Idade = idade,
+                    Sexo = usuario.Sexo,
+                };
+            });
+        }
+
+        public UsuarioIdade CalculaIdade(Usuario usuarios)
+        {
+            DateTime hoje = DateTime.Today;
+
+            int idade = hoje.Year - usuarios.DataNascimento.Year;
+
+            if (usuarios.DataNascimento > hoje.AddYears(-idade))
+            {
+                idade--;
+            }
+
+            return new UsuarioIdade
+            {
+                IdUsuario = usuarios.IdUsuario,
+                NomeContato = usuarios.NomeContato,
+                Ativo = usuarios.Ativo,
+                DataNascimento = usuarios.DataNascimento.ToString("dd/MM/yyyy"),
+                Idade = idade,
+                Sexo = usuarios.Sexo,
+            };
+
         }
 
     }
