@@ -79,7 +79,20 @@ namespace SERVICES.Services
             if (!getUsuario.Ativo)
                 return (false, "Usuario desativado", null);
 
-            return (true, string.Empty, CalculaIdade(getUsuario));
+
+            int idade = CalculaIdade(getUsuario.DataNascimento);
+
+            UsuarioIdade usuarioIdade = new UsuarioIdade
+            {
+                IdUsuario = getUsuario.IdUsuario,
+                NomeContato = getUsuario.NomeContato,
+                Ativo = getUsuario.Ativo,
+                DataNascimento = getUsuario.DataNascimento.ToString("dd/MM/yyyy"),
+                Idade = idade,
+                Sexo = getUsuario.Sexo,
+            };
+
+            return (true, string.Empty, usuarioIdade);
         }
 
         public IEnumerable<UsuarioIdade> GetListaUsuarios()
@@ -197,7 +210,7 @@ namespace SERVICES.Services
 
         #region ..:: METODOS ::..
 
-        public bool ValidaInformacoes(DateTime dataNascimento, out string mensagem)
+        public static bool ValidaInformacoes(DateTime dataNascimento, out string mensagem)
         {
             DateTime hoje = DateTime.Today;
 
@@ -256,27 +269,18 @@ namespace SERVICES.Services
             });
         }
 
-        public UsuarioIdade CalculaIdade(Usuario usuarios)
+        public static int CalculaIdade(DateTime dataNascimento)
         {
             DateTime hoje = DateTime.Today;
 
-            int idade = hoje.Year - usuarios.DataNascimento.Year;
+            int idade = hoje.Year - dataNascimento.Year;
 
-            if (usuarios.DataNascimento > hoje.AddYears(-idade))
+            if (dataNascimento > hoje.AddYears(-idade))
             {
                 idade--;
             }
 
-            return new UsuarioIdade
-            {
-                IdUsuario = usuarios.IdUsuario,
-                NomeContato = usuarios.NomeContato,
-                Ativo = usuarios.Ativo,
-                DataNascimento = usuarios.DataNascimento.ToString("dd/MM/yyyy"),
-                Idade = idade,
-                Sexo = usuarios.Sexo,
-            };
-
+            return idade;
         }
 
         #endregion ..:: METODOS ::..
