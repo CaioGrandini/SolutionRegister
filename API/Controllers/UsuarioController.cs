@@ -18,6 +18,7 @@ namespace API.Controllers
             _usuarioServices = usuarioServices;
         }
 
+        #region ..:: INSERT ::..
 
         [HttpPost("insert")]
         public ActionResult Post([FromBody] UsuarioInsert usuario)
@@ -34,6 +35,10 @@ namespace API.Controllers
 
         }
 
+        #endregion ..:: INSERT ::..
+
+        #region ..:: GET's ::..
+
         [HttpGet("get/{id}")]
         public ActionResult Get(int id)
         {
@@ -48,7 +53,6 @@ namespace API.Controllers
             return Ok(usuarios);
         }
 
-
         [HttpGet("getList")]
         public IEnumerable<UsuarioIdade> GetList()
         {
@@ -56,7 +60,9 @@ namespace API.Controllers
             return usuario;
         }
 
+        #endregion ..:: GET's ::..
 
+        #region ..:: DELETE ::..
         [HttpDelete("delete/{id}")]
         public ActionResult Delete(int id)
         {
@@ -68,7 +74,9 @@ namespace API.Controllers
                 return BadRequest(new { error = message });
         }
 
-        
+        #endregion ..:: DELETE ::..
+
+        #region ..:: UPDATE's ::..
 
         [HttpPut("update/nome/{id}")]
         public ActionResult UpdateUsuario(int id, [FromBody] UpdateNome usuario)
@@ -126,5 +134,7 @@ namespace API.Controllers
                 return BadRequest(new { error = message });
 
         }
+
+        #endregion ..:: UPDATE's ::..
     }
 }
