@@ -1,10 +1,20 @@
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using MODEL.DTO;
 using SERVICES.Services;
+using Xunit.Abstractions;
 
 namespace ProjetoTeste
 {
     public class Projeto
     {
+
+        private readonly ITestOutputHelper _output;
+
+        public Projeto(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void CalculaIdade()
         {
@@ -22,7 +32,10 @@ namespace ProjetoTeste
             string data = "2025-08-03";
             DateTime dataConvert = Convert.ToDateTime(data);
 
-            Assert.False(UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem));
+            bool resultado = UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem);
+
+            _output.WriteLine(mensagem);
+            Assert.False(resultado, mensagem);
         }
 
         [Fact]
@@ -32,7 +45,9 @@ namespace ProjetoTeste
             string data = "2010-10-10";
             DateTime dataConvert = Convert.ToDateTime(data);
 
-            Assert.False(UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem));
+            bool resultado = UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem);
+            _output.WriteLine(mensagem);
+            Assert.False(resultado, mensagem);
         }
 
         [Fact]
@@ -42,7 +57,9 @@ namespace ProjetoTeste
             string data = "2025-07-25";
             DateTime dataConvert = Convert.ToDateTime(data);
 
-            Assert.False(UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem));
+            bool resultado = UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem);
+            _output.WriteLine(mensagem);
+            Assert.False(resultado, mensagem);
         }
 
         [Fact]
@@ -52,7 +69,10 @@ namespace ProjetoTeste
             string data = "2000-10-27";
             DateTime dataConvert = Convert.ToDateTime(data);
 
-            Assert.True(UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem));
+            bool resultado = UsuarioServices.ValidaInformacoes(dataConvert, out string mensagem);
+
+            Assert.True(resultado, mensagem);
+
         }
     }
 }
